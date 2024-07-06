@@ -1,4 +1,21 @@
 {
   "name": "three-js-2228",
-  "packageManager": "yarn@4.3.1"
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "postinstall": "sort-package-json",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.166.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.166.0",
+    "sort-package-json": "^2.10.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1"
+  }
 }
