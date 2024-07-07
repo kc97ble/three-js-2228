@@ -22,5 +22,5 @@ export function createWorld(state: State): World {
 }
 
 export function updateWorld(world: World, state: State) {
-  world.cube.setRotationFromQuaternion(state.diceOrientation);
+  world.cube.quaternion.copy(state.diceOrientation);
 }
