@@ -1,7 +1,7 @@
 import * as Ʒ from "three";
 
 const DAMPER_COEF = 0.15; // how much velocity remains after one second
-const SPRING_COEF = 10.0;
+const SPRING_COEF = 10.0; // how strong the springs are
 
 const UNIT_CUBE_VERTICES = [
   new Ʒ.Vector3(-0.5, -0.5, -0.5),
@@ -24,7 +24,6 @@ const CUSHIONS = [
 ];
 
 export type State = {
-  time: number | undefined;
   diceOrientation: Ʒ.Quaternion;
   diceAngularVelocity: Ʒ.Vector3;
   diceAngularAcceleration: Ʒ.Vector3;
@@ -32,7 +31,6 @@ export type State = {
 
 export function createState(): State {
   return {
-    time: undefined,
     diceOrientation: new Ʒ.Quaternion(),
     diceAngularVelocity: new Ʒ.Vector3(),
     diceAngularAcceleration: new Ʒ.Vector3(),

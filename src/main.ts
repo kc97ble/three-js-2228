@@ -1,6 +1,5 @@
 import * as Ʒ from "three";
 import "./style.css";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { createRenderer } from "./utils/renderer";
 import { createWorld, updateWorld } from "./utils/world";
 import { createState, advanceState } from "./utils/state";
@@ -15,20 +14,50 @@ if (!(canvas instanceof HTMLCanvasElement)) {
 const renderer = createRenderer(canvas, aspect);
 
 const camera = new Ʒ.PerspectiveCamera(75, aspect, 0.1, 1000);
-camera.position.z = 5;
+camera.position.z = 2;
 
-const orbit = new OrbitControls(camera, renderer.domElement);
-orbit.update();
+// import { OrbitControls } from "three/examples/jsm/Addons.js";
+// const orbit = new OrbitControls(camera, renderer.domElement);
+// orbit.update();
 
 const state = createState();
 const world = createWorld(state);
 
+let numTouches = 0;
+
+function updateDiceAngularAcceleration() {
+  if (numTouches > 0) {
+    state.diceAngularAcceleration.randomDirection().multiplyScalar(30);
+  } else {
+    state.diceAngularAcceleration.set(0, 0, 0);
+  }
+}
+
 window.addEventListener("mousedown", () => {
-  state.diceAngularAcceleration.randomDirection().multiplyScalar(30);
+  numTouches += 1;
+  updateDiceAngularAcceleration();
 });
 
 window.addEventListener("mouseup", () => {
-  state.diceAngularAcceleration.set(0, 0, 0);
+  numTouches -= 1;
+  updateDiceAngularAcceleration();
+});
+
+window.addEventListener("touchstart", (event) => {
+  event.preventDefault();
+  numTouches += 1;
+  updateDiceAngularAcceleration();
+});
+
+window.addEventListener("touchend", (event) => {
+  event.preventDefault();
+  numTouches -= 1;
+  updateDiceAngularAcceleration();
+});
+
+window.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
 });
 
 let now: DOMHighResTimeStamp | undefined = undefined;
@@ -37,7 +66,7 @@ renderer.setAnimationLoop((time) => {
   if (now === undefined) {
     now = time;
   } else {
-    advanceState(state, (time - now) / 1000);
+    advanceState(state, Math.min(time - now, 250) / 1000);
     now = time;
   }
 
