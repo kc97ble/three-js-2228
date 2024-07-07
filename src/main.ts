@@ -43,21 +43,13 @@ window.addEventListener("mouseup", () => {
   updateDiceAngularAcceleration();
 });
 
-window.addEventListener("touchstart", (event) => {
-  event.preventDefault();
+window.addEventListener("touchstart", () => {
   numTouches += 1;
   updateDiceAngularAcceleration();
-});
-
-window.addEventListener("touchend", (event) => {
-  event.preventDefault();
-  numTouches -= 1;
-  updateDiceAngularAcceleration();
-});
-
-window.addEventListener("contextmenu", (event) => {
-  event.preventDefault();
-  event.stopPropagation();
+  setTimeout(() => {
+    numTouches -= 1;
+    updateDiceAngularAcceleration();
+  }, 2000);
 });
 
 let now: DOMHighResTimeStamp | undefined = undefined;

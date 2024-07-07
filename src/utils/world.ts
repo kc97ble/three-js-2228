@@ -1,9 +1,10 @@
 import * as Ʒ from "three";
 import { State } from "./state";
 import matcapPorcelainWhite from "../matcaps/porcelain-white.jpg";
+import { CSG } from "three-csg-ts";
 
 type World = {
-  cube: Ʒ.Object3D;
+  dice: Ʒ.Object3D;
   scene: Ʒ.Scene;
 };
 
@@ -39,8 +40,24 @@ export function createWorld(state: State): World {
     matcap: textureLoader.load(matcapPorcelainWhite),
   });
   const cube = new Ʒ.Mesh(cubeGeometry, cubeMaterial);
-  cube.setRotationFromQuaternion(state.diceOrientation);
-  scene.add(cube);
+  let dice: Ʒ.Mesh = cube;
+
+  const sphere = new Ʒ.Mesh(new Ʒ.SphereGeometry(0.7, 32, 32));
+  dice = CSG.intersect(dice, sphere);
+
+  const cylinderY = new Ʒ.Mesh(new Ʒ.CylinderGeometry(0.64, 0.64, 1));
+  dice = CSG.intersect(dice, cylinderY);
+
+  const cylinderZ = new Ʒ.Mesh(new Ʒ.CylinderGeometry(0.64, 0.64, 1));
+  cylinderZ.rotateX(0.5 * Math.PI).updateMatrix();
+  dice = CSG.intersect(dice, cylinderZ);
+
+  const cylinderX = new Ʒ.Mesh(new Ʒ.CylinderGeometry(0.64, 0.64, 1));
+  cylinderX.rotateZ(0.5 * Math.PI).updateMatrix();
+  dice = CSG.intersect(dice, cylinderX);
+
+  dice.setRotationFromQuaternion(state.diceOrientation);
+  scene.add(dice);
 
   const face1 = createFace([[0, 0]], {
     color: 0x990011,
@@ -48,7 +65,7 @@ export function createWorld(state: State): World {
     scale: 1,
   });
   face1.position.set(0, 0, 0.5001);
-  cube.add(face1);
+  dice.add(face1);
 
   const face2 = createFace(
     [
@@ -59,7 +76,7 @@ export function createWorld(state: State): World {
   );
   face2.position.set(0, -0.5001, 0);
   face2.rotateX(0.5 * Math.PI);
-  cube.add(face2);
+  dice.add(face2);
 
   const face3 = createFace(
     [
@@ -71,7 +88,7 @@ export function createWorld(state: State): World {
   );
   face3.position.set(0.5001, 0, 0);
   face3.rotateY(0.5 * Math.PI);
-  cube.add(face3);
+  dice.add(face3);
 
   const face4 = createFace(
     [
@@ -84,7 +101,7 @@ export function createWorld(state: State): World {
   );
   face4.position.set(-0.5001, 0, 0);
   face4.rotateY(-0.5 * Math.PI);
-  cube.add(face4);
+  dice.add(face4);
 
   const face5 = createFace(
     [
@@ -98,7 +115,7 @@ export function createWorld(state: State): World {
   );
   face5.position.set(0, 0.5001, 0);
   face5.rotateX(-0.5 * Math.PI);
-  cube.add(face5);
+  dice.add(face5);
 
   const face6 = createFace(
     [
@@ -113,7 +130,7 @@ export function createWorld(state: State): World {
   );
   face6.position.set(0, 0, -0.5001);
   face6.rotateX(Math.PI);
-  cube.add(face6);
+  dice.add(face6);
 
   // const axesHelper = new Ʒ.AxesHelper(2);
   // scene.add(axesHelper);
@@ -129,9 +146,9 @@ export function createWorld(state: State): World {
   directionalLight.position.set(0, 0, 1);
   scene.add(directionalLight);
 
-  return { scene, cube };
+  return { scene, dice };
 }
 
 export function updateWorld(world: World, state: State) {
-  world.cube.quaternion.copy(state.diceOrientation);
+  world.dice.quaternion.copy(state.diceOrientation);
 }
