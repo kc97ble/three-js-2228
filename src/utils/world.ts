@@ -1,7 +1,6 @@
 import * as Ʒ from "three";
 import { State } from "./state";
-import matcapPorcelainWhite from "../matcaps/porcelain-white.jpg";
-import { CSG } from "three-csg-ts";
+import matcap from "../matcaps/F9E6C7_FCF7DF_EDD3AA_F1D4B4-256px.png";
 
 type World = {
   dice: Ʒ.Object3D;
@@ -29,32 +28,55 @@ function createFace(
   return group;
 }
 
+function apply(
+  unary: (point: Ʒ.Vector3Tuple) => Ʒ.Vector3Tuple,
+  geom: Ʒ.BufferGeometry
+) {
+  const p = geom.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const [x0, y0, z0] = [p.getX(i), p.getY(i), p.getZ(i)];
+    const [x1, y1, z1] = unary([x0, y0, z0]);
+    p.setXYZ(i, x1, y1, z1);
+  }
+  p.needsUpdate = true;
+}
+
+function getInflatedSphereGeometry(r: number) {
+  const getR = (x: number, y: number, z: number) => {
+    const p = Math.max(Math.abs(x), Math.abs(y), Math.abs(z));
+    const boxR = Math.max(Math.abs(x), Math.abs(y), Math.abs(z));
+    const sphereR = Math.sqrt(x ** 2 + y ** 2 + z ** 2) * 0.75;
+    if (p >= 0.78) {
+      return boxR;
+    } else if (p <= 0.75) {
+      return sphereR;
+    } else {
+      // return (sphereR + boxR) / 2;
+      const t = (p - 0.75) / (0.78 - 0.75);
+      return t * boxR + (1 - t) * sphereR;
+    }
+  };
+
+  const sphereGeometry = new Ʒ.SphereGeometry(1, 256, 256);
+  apply(([x, y, z]) => {
+    const R = getR(x, y, z);
+    return [(x / R) * r, (y / R) * r, (z / R) * r];
+  }, sphereGeometry);
+  return sphereGeometry;
+}
+
 export function createWorld(state: State): World {
   const textureLoader = new Ʒ.TextureLoader();
 
   const scene = new Ʒ.Scene();
-  scene.background = new Ʒ.Color(0xffffff);
+  scene.background = new Ʒ.Color(0x102140);
+  document.body.style.backgroundColor = "#102140";
 
-  const cubeGeometry = new Ʒ.BoxGeometry(1, 1, 1);
-  const cubeMaterial = new Ʒ.MeshMatcapMaterial({
-    matcap: textureLoader.load(matcapPorcelainWhite),
+  const sphereGeometry = getInflatedSphereGeometry(0.5);
+  const diceMaterial = new Ʒ.MeshMatcapMaterial({
+    matcap: textureLoader.load(matcap),
   });
-  const cube = new Ʒ.Mesh(cubeGeometry, cubeMaterial);
-  let dice: Ʒ.Mesh = cube;
-
-  const sphere = new Ʒ.Mesh(new Ʒ.SphereGeometry(0.7, 32, 32));
-  dice = CSG.intersect(dice, sphere);
-
-  const cylinderY = new Ʒ.Mesh(new Ʒ.CylinderGeometry(0.64, 0.64, 1));
-  dice = CSG.intersect(dice, cylinderY);
-
-  const cylinderZ = new Ʒ.Mesh(new Ʒ.CylinderGeometry(0.64, 0.64, 1));
-  cylinderZ.rotateX(0.5 * Math.PI).updateMatrix();
-  dice = CSG.intersect(dice, cylinderZ);
-
-  const cylinderX = new Ʒ.Mesh(new Ʒ.CylinderGeometry(0.64, 0.64, 1));
-  cylinderX.rotateZ(0.5 * Math.PI).updateMatrix();
-  dice = CSG.intersect(dice, cylinderX);
+  const dice = new Ʒ.Mesh(sphereGeometry, diceMaterial);
 
   dice.setRotationFromQuaternion(state.diceOrientation);
   scene.add(dice);
@@ -64,7 +86,7 @@ export function createWorld(state: State): World {
     radius: 0.2,
     scale: 1,
   });
-  face1.position.set(0, 0, 0.5001);
+  face1.position.set(0, 0, 0.501);
   dice.add(face1);
 
   const face2 = createFace(
@@ -74,7 +96,7 @@ export function createWorld(state: State): World {
     ],
     { color: 0x150e06, radius: 0.15, scale: 0.35 }
   );
-  face2.position.set(0, -0.5001, 0);
+  face2.position.set(0, -0.501, 0);
   face2.rotateX(0.5 * Math.PI);
   dice.add(face2);
 
@@ -86,7 +108,7 @@ export function createWorld(state: State): World {
     ],
     { color: 0x150e06, radius: 0.1, scale: 0.18 }
   );
-  face3.position.set(0.5001, 0, 0);
+  face3.position.set(0.501, 0, 0);
   face3.rotateY(0.5 * Math.PI);
   dice.add(face3);
 
@@ -99,7 +121,7 @@ export function createWorld(state: State): World {
     ],
     { color: 0x990011, radius: 0.125, scale: 0.15 }
   );
-  face4.position.set(-0.5001, 0, 0);
+  face4.position.set(-0.501, 0, 0);
   face4.rotateY(-0.5 * Math.PI);
   dice.add(face4);
 
@@ -113,7 +135,7 @@ export function createWorld(state: State): World {
     ],
     { color: 0x150e06, radius: 0.1, scale: 0.18 }
   );
-  face5.position.set(0, 0.5001, 0);
+  face5.position.set(0, 0.501, 0);
   face5.rotateX(-0.5 * Math.PI);
   dice.add(face5);
 
@@ -128,7 +150,7 @@ export function createWorld(state: State): World {
     ],
     { color: 0x150e06, radius: 0.1, scale: 0.225 }
   );
-  face6.position.set(0, 0, -0.5001);
+  face6.position.set(0, 0, -0.501);
   face6.rotateX(Math.PI);
   dice.add(face6);
 

@@ -1,10 +1,11 @@
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 import * as Ʒ from "three";
 import "./style.css";
 import { createRenderer } from "./utils/renderer";
 import { createWorld, updateWorld } from "./utils/world";
 import { createState, advanceState } from "./utils/state";
 
-const aspect = 5 / 4;
+const aspect = 2 / 3;
 
 const canvas = document.querySelector("#canvas");
 if (!(canvas instanceof HTMLCanvasElement)) {
@@ -13,14 +14,16 @@ if (!(canvas instanceof HTMLCanvasElement)) {
 
 const renderer = createRenderer(canvas, aspect);
 
-const camera = new Ʒ.PerspectiveCamera(75, aspect, 0.1, 1000);
-camera.position.z = 2;
+const camera = new Ʒ.PerspectiveCamera(25, aspect, 0.1, 1000);
+camera.position.z = 10;
 
-// import { OrbitControls } from "three/examples/jsm/Addons.js";
-// const orbit = new OrbitControls(camera, renderer.domElement);
-// orbit.update();
+const orbit = new OrbitControls(camera, renderer.domElement);
+orbit.enableRotate = false;
+orbit.mouseButtons.LEFT = Ʒ.MOUSE.PAN;
+orbit.update();
 
 const state = createState();
+state.diceAngularVelocity.randomDirection().multiplyScalar(50);
 const world = createWorld(state);
 
 let numTouches = 0;
