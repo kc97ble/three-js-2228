@@ -18,7 +18,7 @@ function resizeRenderer(
 }
 
 export function createRenderer(canvas: HTMLCanvasElement, aspect: number) {
-  const renderer = new Ʒ.WebGLRenderer({ canvas });
+  const renderer = new Ʒ.WebGLRenderer({ canvas, alpha: true });
   resizeRenderer(renderer, canvas, aspect);
 
   window.addEventListener("resize", () => {

@@ -1,6 +1,6 @@
 import * as Ʒ from "three";
 import { State } from "./state";
-import matcap from "../matcaps/F9E6C7_FCF7DF_EDD3AA_F1D4B4-256px.png";
+import matcap from "../matcaps/DFDFD6_58544E_81766A_989288-256px.png";
 
 type World = {
   dice: Ʒ.Object3D;
@@ -51,7 +51,6 @@ function getInflatedSphereGeometry(r: number) {
     } else if (p <= 0.75) {
       return sphereR;
     } else {
-      // return (sphereR + boxR) / 2;
       const t = (p - 0.75) / (0.78 - 0.75);
       return t * boxR + (1 - t) * sphereR;
     }
@@ -67,10 +66,7 @@ function getInflatedSphereGeometry(r: number) {
 
 export function createWorld(state: State): World {
   const textureLoader = new Ʒ.TextureLoader();
-
   const scene = new Ʒ.Scene();
-  scene.background = new Ʒ.Color(0x102140);
-  document.body.style.backgroundColor = "#102140";
 
   const sphereGeometry = getInflatedSphereGeometry(0.5);
   const diceMaterial = new Ʒ.MeshMatcapMaterial({
