@@ -26,33 +26,24 @@ const state = createState();
 state.diceAngularVelocity.randomDirection().multiplyScalar(50);
 const world = createWorld(state);
 
-let numTouches = 0;
+let windCount = 0;
 
-function updateDiceAngularAcceleration() {
-  if (numTouches > 0) {
-    state.diceAngularAcceleration.randomDirection().multiplyScalar(30);
-  } else {
-    state.diceAngularAcceleration.set(0, 0, 0);
-  }
+function startWind() {
+  windCount += 1;
+  state.windEnabled = windCount > 0;
 }
 
-window.addEventListener("mousedown", () => {
-  numTouches += 1;
-  updateDiceAngularAcceleration();
-});
+function stopWind() {
+  windCount -= 1;
+  state.windEnabled = windCount > 0;
+}
 
-window.addEventListener("mouseup", () => {
-  numTouches -= 1;
-  updateDiceAngularAcceleration();
-});
+window.addEventListener("mousedown", startWind);
+window.addEventListener("mouseup", stopWind);
 
 window.addEventListener("touchstart", () => {
-  numTouches += 1;
-  updateDiceAngularAcceleration();
-  setTimeout(() => {
-    numTouches -= 1;
-    updateDiceAngularAcceleration();
-  }, 2000);
+  setTimeout(() => startWind(), 0);
+  setTimeout(() => stopWind(), 2000);
 });
 
 let now: DOMHighResTimeStamp | undefined = undefined;

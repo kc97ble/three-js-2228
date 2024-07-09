@@ -90,7 +90,7 @@ export function createWorld(state: State): World {
       [0, -0.5],
       [0, +0.5],
     ],
-    { color: 0x150e06, radius: 0.15, scale: 0.35 }
+    { color: 0x150e06, radius: 0.1, scale: 0.35 }
   );
   face2.position.set(0, -0.501, 0);
   face2.rotateX(0.5 * Math.PI);
@@ -115,7 +115,7 @@ export function createWorld(state: State): World {
       [+1, +1],
       [+1, -1],
     ],
-    { color: 0x990011, radius: 0.125, scale: 0.15 }
+    { color: 0x990011, radius: 0.1, scale: 0.15 }
   );
   face4.position.set(-0.501, 0, 0);
   face4.rotateY(-0.5 * Math.PI);
@@ -137,12 +137,12 @@ export function createWorld(state: State): World {
 
   const face6 = createFace(
     [
-      [-0.5, -1],
-      [-0.5, 0],
-      [-0.5, +1],
-      [+0.5, -1],
-      [+0.5, 0],
-      [+0.5, +1],
+      [-0.7, -1],
+      [-0.7, 0],
+      [-0.7, +1],
+      [+0.7, -1],
+      [+0.7, 0],
+      [+0.7, +1],
     ],
     { color: 0x150e06, radius: 0.1, scale: 0.225 }
   );

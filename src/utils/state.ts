@@ -24,16 +24,18 @@ const CUSHIONS = [
 ];
 
 export type State = {
+  elapsedTime: number;
   diceOrientation: Ʒ.Quaternion;
   diceAngularVelocity: Ʒ.Vector3;
-  diceAngularAcceleration: Ʒ.Vector3;
+  windEnabled: boolean;
 };
 
 export function createState(): State {
   return {
+    elapsedTime: 0,
     diceOrientation: new Ʒ.Quaternion(),
     diceAngularVelocity: new Ʒ.Vector3(),
-    diceAngularAcceleration: new Ʒ.Vector3(),
+    windEnabled: false,
   };
 }
 
@@ -57,15 +59,38 @@ function rotateByVector(
   orientation.normalize();
 }
 
+function generateRandomSineWave(n: number) {
+  const ks = Array.from(Array(n), () => Math.random());
+
+  return function (t: number) {
+    return ks
+      .map((k) => k * Math.sin(t / k + 2 * k * Math.PI))
+      .reduce((a, b) => a + b, 0);
+  };
+}
+
+function generateRandomWind() {
+  const fx = generateRandomSineWave(8);
+  const fy = generateRandomSineWave(8);
+  const fz = generateRandomSineWave(8);
+  return function (t: number) {
+    return new Ʒ.Vector3(fx(t), fy(t), fz(t)).normalize();
+  };
+}
+
+const wind = generateRandomWind();
+
 export function advanceState(state: State, deltaTime: number) {
   // 1. Orientation
   rotateByVector(state.diceOrientation, state.diceAngularVelocity, deltaTime);
 
   // 2. Angular Velocity
-  state.diceAngularVelocity.addScaledVector(
-    state.diceAngularAcceleration,
-    deltaTime
-  );
+  if (state.windEnabled) {
+    state.diceAngularVelocity.addScaledVector(
+      wind(state.elapsedTime).multiplyScalar(60),
+      deltaTime
+    );
+  }
 
   state.diceAngularVelocity.setLength(
     state.diceAngularVelocity.length() * DAMPER_COEF ** deltaTime
@@ -90,4 +115,7 @@ export function advanceState(state: State, deltaTime: number) {
     totalAngularAcceleration,
     deltaTime
   );
+
+  // 4. Elapsed Time
+  state.elapsedTime += deltaTime;
 }
